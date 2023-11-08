@@ -10,8 +10,8 @@
     }
   ],
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "watch-ts": "yarn g:tsc -p $INIT_CWD -w"
   },
   "dependencies": {
-    "@bangle.dev/utils": "workspace:*",
+    "@bangle.dev/utils": "0.32.1",
     "@types/jest": "^29.5.3",
     "markdown-it": "^10.0.0",
     "prosemirror-markdown": "^1.11.1"
@@ -35,11 +35,11 @@
     "@bangle.dev/pm": "*"
   },
   "devDependencies": {
-    "@bangle.dev/base-components": "workspace:*",
-    "@bangle.dev/core": "workspace:*",
-    "@bangle.dev/pm": "workspace:*",
-    "@bangle.dev/table": "workspace:*",
-    "@bangle.dev/test-helpers": "workspace:*",
+    "@bangle.dev/base-components": "0.32.1",
+    "@bangle.dev/core": "0.32.1",
+    "@bangle.dev/pm": "0.32.1",
+    "@bangle.dev/table": "0.32.1",
+    "@bangle.dev/test-helpers": "0.32.1",
     "@types/markdown-it": "^12.2.3"
   },
   "publishConfig": {
@@ -51,5 +51,10 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     }
-  }
+  },
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "types": "dist/index.d.ts"
 }
