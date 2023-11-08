@@ -1,5 +1,3 @@
-export { default as StateCore } from 'markdown-it/lib/rules_core/state_core';
-export { default as Token } from 'markdown-it/lib/token';
 import markdownIt from 'markdown-it';
 import { MarkdownParser, MarkdownSerializer } from 'prosemirror-markdown';
 export { MarkdownSerializerState } from 'prosemirror-markdown';
@@ -36,4 +34,7 @@ declare function todoListMarkdownItPlugin(md: any, options?: {
     isDoneAttrName?: string;
 }): void;
 
-export { GetTokenDetails, getDefaultMarkdownItTokenizer, inlineNodeParser, markdownParser, markdownSerializer, todoListMarkdownItPlugin };
+declare type StateCore = any;
+declare type Token = any;
+
+export { GetTokenDetails, StateCore, Token, getDefaultMarkdownItTokenizer, inlineNodeParser, markdownParser, markdownSerializer, todoListMarkdownItPlugin };
