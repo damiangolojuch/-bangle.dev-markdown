@@ -1,4 +1,4 @@
-import markdownIt, { Token } from 'markdown-it';
+import markdownIt from 'markdown-it';
 import { MarkdownParser, MarkdownSerializer } from 'prosemirror-markdown';
 import { SpecRegistry } from '@bangle.dev/core';
 import { assertNotUndefined } from '@bangle.dev/utils';
@@ -112,6 +112,125 @@ function markdownLoader(specRegistry = new SpecRegistry()) {
             mark: markSerializer,
         },
     };
+}
+
+class Token {
+    constructor(type, tag, nesting) {
+        /**
+         * HTML attributes. Format: `[[name1, value1], [name2, value2]]`
+         */
+        this.attrs = null;
+        /**
+         * Source map info. Format: `[line_begin, line_end]`
+         */
+        this.map = null;
+        /**
+         * nesting level, the same as `state.level`
+         */
+        this.level = 0;
+        /**
+         * An array of child nodes (inline and img tokens)
+         */
+        this.children = null;
+        /**
+         * In a case of self-closing tag (code, html, fence, etc.),
+         * it has contents of this tag.
+         */
+        this.content = '';
+        /**
+         * '*' or '_' for emphasis, fence string for fence, etc.
+         */
+        this.markup = '';
+        /**
+         * Fence info string
+         */
+        this.info = '';
+        /**
+         * A place for plugins to store an arbitrary data
+         */
+        this.meta = null;
+        /**
+         * True for block-level tokens, false for inline tokens.
+         * Used in renderer to calculate line breaks
+         */
+        this.block = false;
+        /**
+         * If it's true, ignore this element when rendering. Used for tight lists
+         * to hide paragraphs.
+         */
+        this.hidden = false;
+        this.type = type;
+        this.tag = tag;
+        this.nesting = nesting;
+    }
+    /**
+     * Get the value of attribute `name`, or null if it does not exist.
+     */
+    attrGet(name) {
+        var idx = this.attrIndex(name), value = null;
+        if (idx >= 0) {
+            // @ts-ignore
+            value = this.attrs[idx][1];
+        }
+        return value;
+    }
+    /**
+     * Search attribute index by name.
+     */
+    attrIndex(name) {
+        var attrs, i, len;
+        if (!this.attrs) {
+            return -1;
+        }
+        attrs = this.attrs;
+        for (i = 0, len = attrs.length; i < len; i++) {
+            // @ts-ignore
+            if (attrs[i][0] === name) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    /**
+     *
+     * Join value to existing attribute via space. Or create new attribute if not
+     * exists. Useful to operate with token classes.
+     */
+    attrJoin(name, value) {
+        var idx = this.attrIndex(name);
+        if (idx < 0) {
+            this.attrPush([name, value]);
+        }
+        else {
+            // @ts-ignore
+            this.attrs[idx][1] = this.attrs[idx][1] + ' ' + value;
+        }
+    }
+    /**
+     * Add `[name, value]` attribute to list. Init attrs if necessary
+     */
+    attrPush(attrData) {
+        if (this.attrs) {
+            this.attrs.push(attrData);
+        }
+        else {
+            this.attrs = [attrData];
+        }
+    }
+    /**
+     * Set `name` attribute to `value`. Override old value if exists.
+     */
+    attrSet(name, value) {
+        var idx = this.attrIndex(name), attrData = [name, value];
+        if (idx < 0) {
+            // @ts-ignore
+            this.attrPush(attrData);
+        }
+        else {
+            // @ts-ignore
+            this.attrs[idx] = attrData;
+        }
+    }
 }
 
 function tableMarkdownItPlugin(md, options = {}) {
